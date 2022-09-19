@@ -2,6 +2,8 @@ import UIKit
 import Metal
 import MetalKit
 import ARKit
+import AVFoundation
+import CoreImage.CIFilterBuiltins
 
 final class MainController: UIViewController, ARSessionDelegate {
     private let isUIEnabled = true
@@ -10,10 +12,18 @@ final class MainController: UIViewController, ARSessionDelegate {
     private var rgbButton = UIButton(type: .system)
     private var showSceneButton = UIButton(type: .system)
     private var saveButton = UIButton(type: .system)
-    private var toggleParticlesButton = UIButton(type: .system)
+    //private var toggleParticlesButton = UIButton(type: .system)
     private let session = ARSession()
     var renderer: Renderer!
     private  var isPasued = false
+    
+    // Segmentation Request
+    private let requestHandler = VNSequenceRequestHandler()
+    private var facePoseRequest: VNDetectFaceRectanglesRequest!
+    private var segmentationRequest = VNGeneratePersonSegmentationRequest()
+    
+    // A structure that contains RGB color intensity values
+    //private var colors: AngleColors?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,15 +32,23 @@ final class MainController: UIViewController, ARSessionDelegate {
             return
         }
         
+        // Metal View Setup (Segmentation & PointCloud)
         session.delegate = self
         // Set the view to use the default device
         if let view = view as? MTKView {
             view.device = device
             view.backgroundColor = UIColor.clear
+            
+            // Segmentation setup
+            view.isPaused = true
+            view.enableSetNeedsDisplay = false
+            view.framebufferOnly = false
+            
             // we need this to enable depth test
             view.depthStencilPixelFormat = .depth32Float
             view.contentScaleFactor = 1
             view.delegate = self
+            
             // Configure the renderer to draw to the view
             renderer = Renderer(session: session, metalDevice: device, renderDestination: view)
             renderer.drawRectResized(size: view.bounds.size)
@@ -48,9 +66,9 @@ final class MainController: UIViewController, ARSessionDelegate {
             tintColor: .yellow, hidden: !isUIEnabled)
         view.addSubview(showSceneButton)
         
-        toggleParticlesButton = createButton(mainView: self, iconName: "circle.grid.hex.fill",
-            tintColor: .green, hidden: !isUIEnabled)
-        view.addSubview(toggleParticlesButton)
+//        toggleParticlesButton = createButton(mainView: self, iconName: "circle.grid.hex.fill",
+//            tintColor: .green, hidden: !isUIEnabled)
+//        view.addSubview(toggleParticlesButton)
         
         rgbButton = createButton(mainView: self, iconName: "eye",
             tintColor: .blue, hidden: !isUIEnabled)
@@ -72,10 +90,10 @@ final class MainController: UIViewController, ARSessionDelegate {
             showSceneButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
             showSceneButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            toggleParticlesButton.widthAnchor.constraint(equalToConstant: 50),
-            toggleParticlesButton.heightAnchor.constraint(equalToConstant: 50),
-            toggleParticlesButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50),
-            toggleParticlesButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+//            toggleParticlesButton.widthAnchor.constraint(equalToConstant: 50),
+//            toggleParticlesButton.heightAnchor.constraint(equalToConstant: 50),
+//            toggleParticlesButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50),
+//            toggleParticlesButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
             
             rgbButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50),
             rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
@@ -125,20 +143,20 @@ final class MainController: UIViewController, ARSessionDelegate {
             renderer.isInViewSceneMode = !renderer.isInViewSceneMode
             if !renderer.isInViewSceneMode {
                 renderer.showParticles = true
-                self.toggleParticlesButton.setBackgroundImage(.init(systemName: "circle.grid.hex.fill"), for: .normal)
+//                self.toggleParticlesButton.setBackgroundImage(.init(systemName: "circle.grid.hex.fill"), for: .normal)
                 self.setShowSceneButtonStyle(isScanning: true)
             } else {
                 self.setShowSceneButtonStyle(isScanning: false)
             }
             
-        case toggleParticlesButton:
-            renderer.showParticles = !renderer.showParticles
-            if (!renderer.showParticles) {
-                renderer.isInViewSceneMode = true
-                self.setShowSceneButtonStyle(isScanning: false)
-            }
-            let iconName = "circle.grid.hex" + (renderer.showParticles ? ".fill" : "")
-            self.toggleParticlesButton.setBackgroundImage(.init(systemName: iconName), for: .normal)
+//        case toggleParticlesButton:
+//            renderer.showParticles = !renderer.showParticles
+//            if (!renderer.showParticles) {
+//                renderer.isInViewSceneMode = true
+//                self.setShowSceneButtonStyle(isScanning: false)
+//            }
+//            let iconName = "circle.grid.hex" + (renderer.showParticles ? ".fill" : "")
+//            self.toggleParticlesButton.setBackgroundImage(.init(systemName: iconName), for: .normal)
             
         default:
             break
@@ -190,9 +208,51 @@ extension MainController: MTKViewDelegate {
     
     // Called whenever the view needs to render
     func draw(in view: MTKView) {
+        // Segmentation Draw
+        guard let commandBuffer = metalCommandQueue.makeCommandBuffer() else {
+            return
+        }
+
+        // grab image
+        guard let ciImage = currentCIImage else {
+            return
+        }
+
+        // ensure drawable is free and not tied in the preivous drawing cycle
+        guard let currentDrawable = view.currentDrawable else {
+            return
+        }
+        
+        // make sure the image is full screen
+        let drawSize = cameraView.drawableSize
+        let scaleX = drawSize.width / ciImage.extent.width
+        let scaleY = drawSize.height / ciImage.extent.height
+        
+        let newImage = ciImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
+        //render into the metal texture
+        self.ciContext.render(newImage,
+                              to: currentDrawable.texture,
+                              commandBuffer: commandBuffer,
+                              bounds: newImage.extent,
+                              colorSpace: CGColorSpaceCreateDeviceRGB())
+
+        // register drawwable to command buffer
+        commandBuffer.present(currentDrawable)
+        commandBuffer.commit()
+        
+        // PointCloud Draw
         renderer.draw()
     }
 }
+
+extension MainController: AVCaptureVideoDataOutputSampleBufferDelegate {
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        // Grab the pixelbuffer frame from the camera output
+        guard let pixelBuffer = sampleBuffer.imageBuffer else { return }
+        processVideoFrame(pixelBuffer)
+    }
+}
+
 
 // MARK: - Added controller functionality
 extension MainController {
@@ -291,3 +351,5 @@ func createButton(mainView: MainController, iconName: String, tintColor: UIColor
 extension MTKView: RenderDestinationProvider {
     
 }
+
+// MARK: - AVCaptureVideoDataOutputSampleBufferDelegate

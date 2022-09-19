@@ -95,7 +95,7 @@ final class Renderer {
     // interfaces
     var confidenceThreshold = 2
     
-    var rgbOn: Bool = false {
+    var rgbOn: Bool = true {
         didSet {
             // apply the change for the shader
             rgbUniforms.radius = rgbOn ? 2 : 0
@@ -135,7 +135,11 @@ final class Renderer {
    
     private func updateCapturedImageTextures(frame: ARFrame) {
         // Create two textures (Y and CbCr) from the provided frame's captured image
-        let pixelBuffer = frame.capturedImage
+        let pixelBuffer = frame.capturedImage       // 이부분에 Segmentation CVPixelBuffer를 넣으면 되지 않을까?
+        
+        // capturedImage Debug 용
+        //let capturedImage = CIImage(cvPixelBuffer: pixelBuffer).oriented(.right)
+        
         guard CVPixelBufferGetPlaneCount(pixelBuffer) >= 2 else {
             return
         }
@@ -176,6 +180,10 @@ final class Renderer {
                 return
         }
         
+        // currentFrame.capturedImage: CVPixelBuffer
+        // maskPixelBuffer = segmentation(capturedImage):
+        // currentFrame.capturedImage = blend(currentFrame.capturedImage, maskPixelBuffer)
+        
         _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
         commandBuffer.addCompletedHandler { [weak self] commandBuffer in
             if let self = self {
@@ -187,10 +195,13 @@ final class Renderer {
         update(frame: currentFrame)
         updateCapturedImageTextures(frame: currentFrame)
         
+        // currentFrame을 이용한 Segmentation -> maskPixelBuffer를 받기 위함
+        
         // handle buffer rotating
         currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
         pointCloudUniformsBuffers[currentBufferIndex][0] = pointCloudUniforms
         
+        // Depth 정보 취득
         if shouldAccumulate(frame: currentFrame), updateDepthTextures(frame: currentFrame) {
             accumulatePoints(frame: currentFrame, commandBuffer: commandBuffer, renderEncoder: renderEncoder)
         }

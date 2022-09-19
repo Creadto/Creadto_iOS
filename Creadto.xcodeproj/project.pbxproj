@@ -11,6 +11,7 @@
 		E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF8E28D16A2E007C5886 /* Helpers.swift */; };
 		E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF9028D16A58007C5886 /* CPUParticle.swift */; };
 		E65ADF9328D16AD5007C5886 /* XError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF9228D16AD5007C5886 /* XError.swift */; };
+		E679F8BE28D1E63C004B6123 /* Maths.swift in Sources */ = {isa = PBXBuildFile; fileRef = E679F8BD28D1E63C004B6123 /* Maths.swift */; };
 		E6B5159128D09685006FCE79 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5159028D09685006FCE79 /* AppDelegate.swift */; };
 		E6B5159328D09685006FCE79 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E6B5159228D09685006FCE79 /* Shaders.metal */; };
 		E6B5159628D09685006FCE79 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5159528D09685006FCE79 /* Renderer.swift */; };
@@ -29,6 +30,7 @@
 		E65ADF8E28D16A2E007C5886 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		E65ADF9028D16A58007C5886 /* CPUParticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUParticle.swift; sourceTree = "<group>"; };
 		E65ADF9228D16AD5007C5886 /* XError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XError.swift; sourceTree = "<group>"; };
+		E679F8BD28D1E63C004B6123 /* Maths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Maths.swift; sourceTree = "<group>"; };
 		E6B5158D28D09685006FCE79 /* Creadto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Creadto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6B5159028D09685006FCE79 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E6B5159228D09685006FCE79 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
@@ -56,6 +58,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E679F8BC28D1E629004B6123 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				E679F8BD28D1E63C004B6123 /* Maths.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		E6B5158428D09685006FCE79 = {
 			isa = PBXGroup;
 			children = (
@@ -75,12 +85,15 @@
 		E6B5158F28D09685006FCE79 /* Creadto */ = {
 			isa = PBXGroup;
 			children = (
+				E6B515AB28D0D0DC006FCE79 /* Gallery */,
 				E6B515AD28D0D0F5006FCE79 /* Export */,
 				E6B515AC28D0D0EB006FCE79 /* Camera */,
-				E6B515AB28D0D0DC006FCE79 /* Gallery */,
 				E6B5159028D09685006FCE79 /* AppDelegate.swift */,
 				E6B515A928D0C1CF006FCE79 /* CreadtoApp.swift */,
 				E6B515AE28D0D178006FCE79 /* MainTabView.swift */,
+				E6B5159C28D09685006FCE79 /* Assets.xcassets */,
+				E6B5159928D09685006FCE79 /* Main.storyboard */,
+				E6B5159E28D09685006FCE79 /* LaunchScreen.storyboard */,
 				E6B515A128D09685006FCE79 /* Creadto-Bridging-Header.h */,
 				E6B5159228D09685006FCE79 /* Shaders.metal */,
 				E6B5159428D09685006FCE79 /* ShaderTypes.h */,
@@ -99,11 +112,9 @@
 		E6B515AC28D0D0EB006FCE79 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
-				E6B5159528D09685006FCE79 /* Renderer.swift */,
+				E679F8BC28D1E629004B6123 /* Utils */,
 				E6B5159728D09685006FCE79 /* MainController.swift */,
-				E6B5159C28D09685006FCE79 /* Assets.xcassets */,
-				E6B5159928D09685006FCE79 /* Main.storyboard */,
-				E6B5159E28D09685006FCE79 /* LaunchScreen.storyboard */,
+				E6B5159528D09685006FCE79 /* Renderer.swift */,
 				E65ADF8C28D169DF007C5886 /* MetalBuffer.swift */,
 				E65ADF8E28D16A2E007C5886 /* Helpers.swift */,
 				E65ADF9028D16A58007C5886 /* CPUParticle.swift */,
@@ -194,6 +205,7 @@
 				E6B515B128D0D216006FCE79 /* ExportView.swift in Sources */,
 				E65ADF9328D16AD5007C5886 /* XError.swift in Sources */,
 				E6B515AA28D0C1CF006FCE79 /* CreadtoApp.swift in Sources */,
+				E679F8BE28D1E63C004B6123 /* Maths.swift in Sources */,
 				E6B5159328D09685006FCE79 /* Shaders.metal in Sources */,
 				E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */,
 				E6B515A828D0A3D6006FCE79 /* GalleryView.swift in Sources */,
