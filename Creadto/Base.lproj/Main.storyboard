@@ -12,11 +12,20 @@
         <scene sceneID="tXr-a1-R10">
             <objects>
                 <viewController storyboardIdentifier="Camera" hidesBottomBarWhenPushed="YES" id="BV1-FR-VrT" customClass="MainController" customModule="Creadto" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" opaque="NO" contentMode="scaleToFill" id="3se-qz-xqx" customClass="MTKView">
+                    <view key="view" opaque="NO" contentMode="scaleToFill" restorationIdentifier="mtkView" id="3se-qz-xqx" customClass="MTKView">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mtkView contentMode="scaleToFill" fixedFrame="YES" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="fwk-YK-svf">
+                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            </mtkView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="3C0-cp-GOg"/>
                     </view>
+                    <connections>
+                        <outlet property="cameraView" destination="fwk-YK-svf" id="SKQ-RF-9Nq"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
             </objects>

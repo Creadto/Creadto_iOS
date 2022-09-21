@@ -193,6 +193,7 @@ final class Renderer {
         
         // update frame data
         update(frame: currentFrame)
+        processVideoFrame(currentFrame.capturedImage)
         updateCapturedImageTextures(frame: currentFrame)
         
         // currentFrame을 이용한 Segmentation -> maskPixelBuffer를 받기 위함
@@ -235,6 +236,21 @@ final class Renderer {
         renderEncoder.endEncoding()
         commandBuffer.present(renderDestination.currentDrawable!)
         commandBuffer.commit()
+    }
+    
+    private func processVideoFrame(_ framePixelBuffer: CVPixelBuffer) {
+        // Perform the requests on the pixel buffer that contains the video frame.
+        try? requestHandler.perform([facePoseRequest, segmentationRequest],
+                                    on: framePixelBuffer,
+                                    orientation: .right)
+        
+        // Get the pixel buffer that contains the mask image.
+        guard let maskPixelBuffer =
+                segmentationRequest.results?.first?.pixelBuffer else { return }
+        
+        // debug 용
+        let debugImage = CIImage(cvPixelBuffer: maskPixelBuffer)
+        let originalImage = CIImage(cvPixelBuffer: framePixelBuffer)
     }
     
     private func shouldAccumulate(frame: ARFrame) -> Bool {
