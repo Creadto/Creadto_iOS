@@ -5,10 +5,21 @@
 import Metal
 import MetalKit
 import ARKit
+import CoreImage.CIFilterBuiltins
+import Vision
 
 
 // MARK: - Core Metal Scan Renderer
 final class Renderer {
+    
+    // Segmentation Properties
+    let requestHandler = VNSequenceRequestHandler()
+    var facePoseRequest: VNDetectFaceRectanglesRequest!
+    var segmentationRequest = VNGeneratePersonSegmentationRequest()
+    // A structure that contains RGB color intensity values.
+    private var colors: AngleColors?
+    
+    // Point Cloud Properties
     var savedCloudURLs = [URL]()
     private var cpuParticlesBuffer = [CPUParticle]()
     var showParticles = true
@@ -95,7 +106,7 @@ final class Renderer {
     // interfaces
     var confidenceThreshold = 2
     
-    var rgbOn: Bool = false {
+    var rgbOn: Bool = true {
         didSet {
             // apply the change for the shader
             rgbUniforms.radius = rgbOn ? 2 : 0
@@ -127,8 +138,10 @@ final class Renderer {
         
         inFlightSemaphore = DispatchSemaphore(value: maxInFlightBuffers)
         self.loadSavedClouds()
+        // Segmentation Request init
+        self.initializeRequests()
     }
-    
+ 
     func drawRectResized(size: CGSize) {
         viewportSize = size
     }
@@ -185,6 +198,7 @@ final class Renderer {
         
         // update frame data
         update(frame: currentFrame)
+        processVideoFrame(currentFrame.capturedImage)
         updateCapturedImageTextures(frame: currentFrame)
         
         // handle buffer rotating
@@ -224,6 +238,21 @@ final class Renderer {
         renderEncoder.endEncoding()
         commandBuffer.present(renderDestination.currentDrawable!)
         commandBuffer.commit()
+    }
+    
+    private func processVideoFrame(_ framePixelBuffer : CVPixelBuffer){
+        // Perform the requests on the pixel buffer that contains the video frame.
+        try? requestHandler.perform([facePoseRequest, segmentationRequest],
+                                    on: framePixelBuffer,
+                                    orientation: .right)
+        
+        // Get the pixel buffer that contains the mask image.
+        guard let maskPixelBuffer =
+                segmentationRequest.results?.first?.pixelBuffer else { return }
+        
+        // debug 용
+        let debugImage = CIImage(cvPixelBuffer: maskPixelBuffer)
+        let originalImage = CIImage(cvPixelBuffer: framePixelBuffer)
     }
     
     private func shouldAccumulate(frame: ARFrame) -> Bool {
@@ -277,6 +306,22 @@ final class Renderer {
 
 // MARK:  - Added Renderer functionality
 extension Renderer {
+    // Segmentation Initialize
+    func initializeRequests() {
+        // Create a request to detect face rectangles.
+        facePoseRequest = VNDetectFaceRectanglesRequest { [weak self] request, _ in
+            guard let face = request.results?.first as? VNFaceObservation else { return }
+            // Generate RGB color intensity values for the face rectangle angles.
+            self?.colors = AngleColors(roll: face.roll, pitch: face.pitch, yaw: face.yaw)
+        }
+        facePoseRequest.revision = VNDetectFaceRectanglesRequestRevision3
+        
+        // Create a request to segment a person from an image.
+        segmentationRequest = VNGeneratePersonSegmentationRequest()
+        segmentationRequest.qualityLevel = .accurate
+        segmentationRequest.outputPixelFormat = kCVPixelFormatType_OneComponent8
+    }
+    
     func toggleParticles() {
         self.showParticles = !self.showParticles
     }
@@ -460,5 +505,31 @@ private extension Renderer {
 
         let rotationAngle = Float(cameraToDisplayRotation(orientation: orientation)) * .degreesToRadian
         return flipYZ * matrix_float4x4(simd_quaternion(rotationAngle, Float3(0, 0, 1)))
+    }
+}
+
+/// A structure that provides an RGB color intensity value for the roll, pitch, and yaw angles.
+struct AngleColors {
+    
+    let red: CGFloat
+    let blue: CGFloat
+    let green: CGFloat
+    
+    init(roll: NSNumber?, pitch: NSNumber?, yaw: NSNumber?) {
+        red = AngleColors.convert(value: roll, with: -.pi, and: .pi)
+        blue = AngleColors.convert(value: pitch, with: -.pi / 2, and: .pi / 2)
+        green = AngleColors.convert(value: yaw, with: -.pi / 2, and: .pi / 2)
+    }
+    
+    static func convert(value: NSNumber?, with minValue: CGFloat, and maxValue: CGFloat) -> CGFloat {
+        guard let value = value else { return 0 }
+        let maxValue = maxValue * 0.8
+        let minValue = minValue + (maxValue * 0.2)
+        let facePoseRange = maxValue - minValue
+        
+        guard facePoseRange != 0 else { return 0 } // protect from zero division
+        
+        let colorRange: CGFloat = 1
+        return (((CGFloat(truncating: value) - minValue) * colorRange) / facePoseRange)
     }
 }
