@@ -18,6 +18,7 @@ final class Renderer {
     var segmentationRequest = VNGeneratePersonSegmentationRequest()
     // A structure that contains RGB color intensity values.
     private var colors: AngleColors?
+    public var ciContext : CIContext!
     
     // Point Cloud Properties
     var savedCloudURLs = [URL]()
@@ -118,6 +119,8 @@ final class Renderer {
         self.device = device
         self.renderDestination = renderDestination
         library = device.makeDefaultLibrary()!
+        
+        ciContext = CIContext(mtlDevice: device)
   
         commandQueue = device.makeCommandQueue()!
         // initialize our buffers
@@ -170,6 +173,13 @@ final class Renderer {
     }
     
     private func update(frame: ARFrame) {
+        // debug 용 (Segmentation 결과 확인)
+        let debug = frame.segmentationBuffer
+        
+        let debugImage = CIImage(cvPixelBuffer: debug!)
+        let debugCGImage = ciContext.createCGImage(debugImage, from: debugImage.extent)!
+        let (mask1DArray, imageInfo) = convertImageToArray(fromCGImage: debugCGImage)
+        
         // frame dependent info
         let camera = frame.camera
         let cameraIntrinsicsInversed = camera.intrinsics.inverse
@@ -179,6 +189,94 @@ final class Renderer {
         pointCloudUniforms.viewProjectionMatrix = projectionMatrix * viewMatrix
         pointCloudUniforms.localToWorld = viewMatrixInversed * rotateToARCamera
         pointCloudUniforms.cameraIntrinsicsInversed = cameraIntrinsicsInversed
+    }
+    
+    func convertImageToArray(fromCGImage imageRef: CGImage?) -> (pixelValues: [UInt8]?, imageInfo : [String : Any])
+    {
+        var imageInfo : [String : Any] = [:]
+        
+        var pixelValues: [UInt8]?
+        if let imageRef = imageRef {
+            let width = imageRef.width
+            imageInfo["width"] = width
+            
+            let height = imageRef.height
+            imageInfo["height"] = height
+            
+            let bitsPerComponent = imageRef.bitsPerComponent
+            imageInfo["bitsPerComponent"] = bitsPerComponent
+            
+            let bytesPerRow = imageRef.bytesPerRow / 4
+            imageInfo["bytesPerRow"] = bytesPerRow
+            
+            let totalBytes = height * bytesPerRow
+            imageInfo["totalBytes"] = totalBytes
+
+            let colorSpace = CGColorSpaceCreateDeviceGray()
+            var intensities = [UInt8](repeating: 0, count: totalBytes)
+            let contextRef = CGContext(data: &intensities, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: 0)
+            contextRef?.draw(imageRef, in: CGRect(x: 0.0, y: 0.0, width: CGFloat(width), height: CGFloat(height)))
+
+            pixelValues = intensities
+            
+            // Choose one channel of 4 channel(R,G,B,W)
+            
+            /**
+                @Description : Choose the first channel (R channel of R,G,B,W)
+             */
+    //        for (index, element) in pixelValues!.enumerated() {
+    //            if(index % 4 == 0){
+    //                for i in 1...3 {
+    //                    pixelValues?[index+i] = element
+    //                }
+    //            }
+    //        }
+            
+            /**
+                @Description : Choose the second channel(g channgel of r,g,b,w)
+             */
+    //        for (index, element) in pixelValues!.enumerated() {
+    //            if(index % 4 == 1){
+    //                for i in 0...2 {
+    //                    if(i == 0) {
+    //                        pixelValues?[index-1] = element
+    //                    }
+    //                    else {
+    //                        pixelValues?[index+i] = element
+    //                    }
+    //                }
+    //            }
+    //        }
+            
+            /**
+             @Description : Choose the third channel(b channel of r,g,b,w)
+            */
+    //        for (index, element) in pixelValues!.enumerated() {
+    //            if(index % 4 == 2){
+    //                for i in 1...3 {
+    //                    if(i != 3) {
+    //                        pixelValues?[index-i] = element
+    //                    }
+    //                    else {
+    //                        pixelValues?[index+1] = element
+    //                    }
+    //                }
+    //            }
+    //        }
+            /**
+             @Description : Choose the last channel(w channel of r,g,b,w)
+            */
+    //        for (index, element) in pixelValues!.enumerated() {
+    //            if(index % 4 == 3){
+    //                for i in 1...3 {
+    //                    pixelValues?[index-i] = element
+    //                }
+    //            }
+    //        }
+            
+        }
+        
+        return (pixelValues, imageInfo)
     }
     
     func draw() {

@@ -48,10 +48,6 @@ final class MainController: UIViewController, ARSessionDelegate {
             tintColor: .yellow, hidden: !isUIEnabled)
         view.addSubview(showSceneButton)
         
-        toggleParticlesButton = createButton(mainView: self, iconName: "circle.grid.hex.fill",
-            tintColor: .green, hidden: !isUIEnabled)
-        view.addSubview(toggleParticlesButton)
-        
         rgbButton = createButton(mainView: self, iconName: "eye",
             tintColor: .blue, hidden: !isUIEnabled)
         view.addSubview(rgbButton)
@@ -72,11 +68,6 @@ final class MainController: UIViewController, ARSessionDelegate {
             showSceneButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
             showSceneButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            toggleParticlesButton.widthAnchor.constraint(equalToConstant: 50),
-            toggleParticlesButton.heightAnchor.constraint(equalToConstant: 50),
-            toggleParticlesButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50),
-            toggleParticlesButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
-            
             rgbButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50),
             rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
             rgbButton.widthAnchor.constraint(equalToConstant: 60),
@@ -91,7 +82,8 @@ final class MainController: UIViewController, ARSessionDelegate {
         // Create a world-tracking configuration, and
         // enable the scene depth frame-semantic.
         let configuration = ARWorldTrackingConfiguration()
-        configuration.frameSemantics = [.sceneDepth, .smoothedSceneDepth]
+        //configuration.frameSemantics = [.sceneDepth, .smoothedSceneDepth]
+        configuration.frameSemantics = [.sceneDepth, .smoothedSceneDepth, .personSegmentationWithDepth]
         // Run the view's session
         session.run(configuration)
         
@@ -125,20 +117,10 @@ final class MainController: UIViewController, ARSessionDelegate {
             renderer.isInViewSceneMode = !renderer.isInViewSceneMode
             if !renderer.isInViewSceneMode {
                 renderer.showParticles = true
-                self.toggleParticlesButton.setBackgroundImage(.init(systemName: "circle.grid.hex.fill"), for: .normal)
                 self.setShowSceneButtonStyle(isScanning: true)
             } else {
                 self.setShowSceneButtonStyle(isScanning: false)
             }
-            
-        case toggleParticlesButton:
-            renderer.showParticles = !renderer.showParticles
-            if (!renderer.showParticles) {
-                renderer.isInViewSceneMode = true
-                self.setShowSceneButtonStyle(isScanning: false)
-            }
-            let iconName = "circle.grid.hex" + (renderer.showParticles ? ".fill" : "")
-            self.toggleParticlesButton.setBackgroundImage(.init(systemName: iconName), for: .normal)
             
         default:
             break
