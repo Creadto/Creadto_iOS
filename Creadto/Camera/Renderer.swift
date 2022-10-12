@@ -341,8 +341,7 @@ final class Renderer {
     private func processVideoFrame(_ framePixelBuffer : CVPixelBuffer){
         // Perform the requests on the pixel buffer that contains the video frame.
         try? requestHandler.perform([facePoseRequest, segmentationRequest],
-                                    on: framePixelBuffer,
-                                    orientation: .right)
+                                    on: framePixelBuffer)
         
         // Get the pixel buffer that contains the mask image.
         guard let maskPixelBuffer =
