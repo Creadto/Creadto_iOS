@@ -35,7 +35,7 @@ final class Renderer {
     private let cameraRotationThreshold = cos(0 * .degreesToRadian)
     private let cameraTranslationThreshold: Float = pow(0.00, 2)   // (meter-squared)
     // The max number of command buffers in flight
-    private let maxInFlightBuffers = 5
+    //private let maxInFlightBuffers = 5
     
     private lazy var rotateToARCamera = Self.makeRotateToARCameraMatrix(orientation: orientation)
     private let session: ARSession
@@ -63,7 +63,7 @@ final class Renderer {
     private var confidenceTexture: CVMetalTexture?
     
     // Multi-buffer rendering pipeline
-    private let inFlightSemaphore: DispatchSemaphore
+    //private let inFlightSemaphore: DispatchSemaphore
     private var currentBufferIndex = 0
     
     // The current viewport size
@@ -120,10 +120,14 @@ final class Renderer {
         
         commandQueue = device.makeCommandQueue()!
         // initialize our buffers
-        for _ in 0 ..< maxInFlightBuffers {
-            rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
-            pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
-        }
+//        for _ in 0 ..< maxInFlightBuffers {
+//            rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
+//            pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
+//        }
+        
+        rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
+        pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
+        
         particlesBuffer = .init(device: device, count: maxPoints, index: kParticleUniforms.rawValue)
         // rbg does not need to read/write depth
         let relaxedStateDescriptor = MTLDepthStencilDescriptor()
@@ -135,7 +139,7 @@ final class Renderer {
         depthStateDescriptor.isDepthWriteEnabled = true
         depthStencilState = device.makeDepthStencilState(descriptor: depthStateDescriptor)!
         
-        inFlightSemaphore = DispatchSemaphore(value: maxInFlightBuffers)
+        //inFlightSemaphore = DispatchSemaphore(value: maxInFlightBuffers)
         self.loadSavedClouds()
         self.initializeRequests()
     }
@@ -186,19 +190,23 @@ final class Renderer {
                 return
         }
                 
-        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
-        commandBuffer.addCompletedHandler { [weak self] commandBuffer in
-            if let self = self {
-                self.inFlightSemaphore.signal()
-            }
-        }
+//        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+//        commandBuffer.addCompletedHandler { [weak self] commandBuffer in
+//            if let self = self {
+//                self.inFlightSemaphore.signal()
+//            }
+//        }
         
         // update frame data
         update(frame: currentFrame)
         updateCapturedImageTextures(frame: currentFrame)
         
         // handle buffer rotating
-        currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
+        //currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
+        
+        if(currentBufferIndex != 0){
+            currentBufferIndex = (currentBufferIndex + 1)
+        }
         pointCloudUniformsBuffers[currentBufferIndex][0] = pointCloudUniforms
         
         if shouldAccumulate(frame: currentFrame), updateDepthTextures(frame: currentFrame) {
@@ -226,10 +234,11 @@ final class Renderer {
         renderEncoder.setVertexBuffer(pointCloudUniformsBuffers[currentBufferIndex])
         renderEncoder.setVertexBuffer(particlesBuffer)
         renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: currentPointCount)
-        
+        print("[debug] renderEncoder setting 완료")
         renderEncoder.endEncoding()
         commandBuffer.present(renderDestination.currentDrawable!)
         commandBuffer.commit()
+        print("[debug] commandBuffer commit")
     }
     
     private func shouldAccumulate(frame: ARFrame) -> Bool {
@@ -248,7 +257,6 @@ final class Renderer {
                                     on: frame.capturedImage)
         guard let maskPixelBuffer =
                 segmentationRequest.results?.first?.pixelBuffer else { return }
-        
         
         
         let maskCIImage = CIImage(cvPixelBuffer: maskPixelBuffer)
@@ -301,6 +309,7 @@ final class Renderer {
         currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % maxPoints
         currentPointCount = min(currentPointCount + gridPointsBuffer.count, maxPoints)
         lastCameraTransform = frame.camera.transform
+        print("[debug] render 완료")
 //        print("---------------------------------------------")
 //        print(lastCameraTransform)
     }
@@ -439,10 +448,12 @@ extension Renderer {
         pointCloudUniformsBuffers = [MetalBuffer<PointCloudUniforms>]()
         
         commandQueue = device.makeCommandQueue()!
-        for _ in 0 ..< maxInFlightBuffers {
-            rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
-            pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
-        }
+//        for _ in 0 ..< maxInFlightBuffers {
+//            rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
+//            pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
+//        }
+        rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
+        pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
         particlesBuffer = .init(device: device, count: maxPoints, index: kParticleUniforms.rawValue)
     }
     
