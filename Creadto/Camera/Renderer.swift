@@ -23,7 +23,8 @@ final class Renderer {
     // Number of sample points on the grid initial: 3M
     //var numGridPoints = 110592 // spacing : 5
     //var numGridPoints = 172800 // spacing : 4
-    var numGridPoints = 307200 // spacing : 3
+    //var numGridPoints = 307200 // spacing : 3
+    var numGridPoints = 80000
     
     // Particle's size in pixels
     private let particleSize: Float = 5
@@ -35,7 +36,7 @@ final class Renderer {
     private let cameraRotationThreshold = cos(0 * .degreesToRadian)
     private let cameraTranslationThreshold: Float = pow(0.00, 2)   // (meter-squared)
     // The max number of command buffers in flight
-    //private let maxInFlightBuffers = 5
+    private let maxInFlightBuffers = 5
     
     private lazy var rotateToARCamera = Self.makeRotateToARCameraMatrix(orientation: orientation)
     private let session: ARSession
@@ -63,7 +64,7 @@ final class Renderer {
     private var confidenceTexture: CVMetalTexture?
     
     // Multi-buffer rendering pipeline
-    //private let inFlightSemaphore: DispatchSemaphore
+    private let inFlightSemaphore: DispatchSemaphore
     private var currentBufferIndex = 0
     
     // The current viewport size
@@ -120,10 +121,10 @@ final class Renderer {
         
         commandQueue = device.makeCommandQueue()!
         // initialize our buffers
-//        for _ in 0 ..< maxInFlightBuffers {
-//            rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
-//            pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
-//        }
+        for _ in 0 ..< maxInFlightBuffers {
+            rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
+            pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
+        }
         
         rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
         pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
@@ -139,7 +140,7 @@ final class Renderer {
         depthStateDescriptor.isDepthWriteEnabled = true
         depthStencilState = device.makeDepthStencilState(descriptor: depthStateDescriptor)!
         
-        //inFlightSemaphore = DispatchSemaphore(value: maxInFlightBuffers)
+        inFlightSemaphore = DispatchSemaphore(value: maxInFlightBuffers)
         self.loadSavedClouds()
         self.initializeRequests()
     }
@@ -190,23 +191,19 @@ final class Renderer {
                 return
         }
                 
-//        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
-//        commandBuffer.addCompletedHandler { [weak self] commandBuffer in
-//            if let self = self {
-//                self.inFlightSemaphore.signal()
-//            }
-//        }
+        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+        commandBuffer.addCompletedHandler { [weak self] commandBuffer in
+            if let self = self {
+                self.inFlightSemaphore.signal()
+            }
+        }
         
         // update frame data
         update(frame: currentFrame)
         updateCapturedImageTextures(frame: currentFrame)
         
         // handle buffer rotating
-        //currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
-        
-        if(currentBufferIndex != 0){
-            currentBufferIndex = (currentBufferIndex + 1)
-        }
+        currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
         pointCloudUniformsBuffers[currentBufferIndex][0] = pointCloudUniforms
         
         if shouldAccumulate(frame: currentFrame), updateDepthTextures(frame: currentFrame) {
@@ -234,11 +231,9 @@ final class Renderer {
         renderEncoder.setVertexBuffer(pointCloudUniformsBuffers[currentBufferIndex])
         renderEncoder.setVertexBuffer(particlesBuffer)
         renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: currentPointCount)
-        print("[debug] renderEncoder setting 완료")
         renderEncoder.endEncoding()
         commandBuffer.present(renderDestination.currentDrawable!)
         commandBuffer.commit()
-        print("[debug] commandBuffer commit")
     }
     
     private func shouldAccumulate(frame: ARFrame) -> Bool {
@@ -273,7 +268,7 @@ final class Renderer {
         let gridPointsBuffer = MetalBuffer<Float2>(device: device,
                                                    array: gridArray,
                                                    index: kGridPoints.rawValue, options: [])
-        
+
         pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
         
         var retainingTextures = [capturedImageTextureY, capturedImageTextureCbCr, depthTexture, confidenceTexture]
@@ -293,6 +288,7 @@ final class Renderer {
                                 confidence: confidence))
                 i += 1
             }
+            print("[Debug] \(i)개 수집 완료")
         }
         
         renderEncoder.setDepthStencilState(relaxedStencilState)
@@ -309,7 +305,6 @@ final class Renderer {
         currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % maxPoints
         currentPointCount = min(currentPointCount + gridPointsBuffer.count, maxPoints)
         lastCameraTransform = frame.camera.transform
-        print("[debug] render 완료")
 //        print("---------------------------------------------")
 //        print(lastCameraTransform)
     }
@@ -448,12 +443,10 @@ extension Renderer {
         pointCloudUniformsBuffers = [MetalBuffer<PointCloudUniforms>]()
         
         commandQueue = device.makeCommandQueue()!
-//        for _ in 0 ..< maxInFlightBuffers {
-//            rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
-//            pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
-//        }
-        rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
-        pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
+        for _ in 0 ..< maxInFlightBuffers {
+            rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
+            pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
+        }
         particlesBuffer = .init(device: device, count: maxPoints, index: kParticleUniforms.rawValue)
     }
     
@@ -516,33 +509,13 @@ private extension Renderer {
         return try? device.makeRenderPipelineState(descriptor: descriptor)
     }
     
-    func createPlaneMetalVertexDescriptor() -> MTLVertexDescriptor {
-        let mtlVertexDescriptor: MTLVertexDescriptor = MTLVertexDescriptor()
-        // Store position in `attribute[[0]]`.
-        mtlVertexDescriptor.attributes[0].format = .float2
-        mtlVertexDescriptor.attributes[0].offset = 0
-        mtlVertexDescriptor.attributes[0].bufferIndex = 0
-        
-        // Store texture coordinates in `attribute[[1]]`.
-        mtlVertexDescriptor.attributes[1].format = .float2
-        mtlVertexDescriptor.attributes[1].offset = 8
-        mtlVertexDescriptor.attributes[1].bufferIndex = 0
-        
-        // Set stride to twice the `float2` bytes per vertex.
-        mtlVertexDescriptor.layouts[0].stride = 2 * MemoryLayout<SIMD2<Float>>.stride
-        mtlVertexDescriptor.layouts[0].stepRate = 1
-        mtlVertexDescriptor.layouts[0].stepFunction = .perVertex
-        
-        return mtlVertexDescriptor
-    }
-    
     /// Makes sample points on camera image, also precompute the anchor point for animation
     func makeGridPoints(array segmentation1DArray : [UInt8]) -> [Float2] {
         let gridArea = cameraResolution.x * cameraResolution.y   // x = 1920, y = 1440
         let spacing = sqrt(gridArea / Float(numGridPoints))
         let deltaX = Int(round(cameraResolution.x / spacing))
         let deltaY = Int(round(cameraResolution.y / spacing))
-        
+
         var points = [Float2]()
         for gridY in 0 ..< deltaY {
             let alternatingOffsetX = Float(gridY % 2) * spacing / 2
@@ -553,7 +526,7 @@ private extension Renderer {
                 }
             }
         }
-        
+
         return points
     }
     
