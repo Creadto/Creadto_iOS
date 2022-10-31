@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E630F1F8290FF78200484927 /* CGRPCZlib in Frameworks */ = {isa = PBXBuildFile; productRef = E630F1F7290FF78200484927 /* CGRPCZlib */; };
+		E630F1FA290FF78200484927 /* GRPC in Frameworks */ = {isa = PBXBuildFile; productRef = E630F1F9290FF78200484927 /* GRPC */; };
+		E630F1FC290FF78200484927 /* protoc-gen-grpc-swift in Frameworks */ = {isa = PBXBuildFile; productRef = E630F1FB290FF78200484927 /* protoc-gen-grpc-swift */; };
 		E652401A28EB41840064D766 /* PLYFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401928EB41840064D766 /* PLYFile.swift */; };
 		E652401C28EC0F670064D766 /* SaveController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401B28EC0F670064D766 /* SaveController.swift */; };
 		E652401E28EC4F650064D766 /* PointCloudVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401D28EC4F650064D766 /* PointCloudVertex.swift */; };
@@ -60,6 +63,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E630F1FA290FF78200484927 /* GRPC in Frameworks */,
+				E630F1F8290FF78200484927 /* CGRPCZlib in Frameworks */,
+				E630F1FC290FF78200484927 /* protoc-gen-grpc-swift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,6 +157,11 @@
 			dependencies = (
 			);
 			name = Creadto;
+			packageProductDependencies = (
+				E630F1F7290FF78200484927 /* CGRPCZlib */,
+				E630F1F9290FF78200484927 /* GRPC */,
+				E630F1FB290FF78200484927 /* protoc-gen-grpc-swift */,
+			);
 			productName = Creadto;
 			productReference = E6B5158D28D09685006FCE79 /* Creadto.app */;
 			productType = "com.apple.product-type.application";
@@ -179,6 +190,9 @@
 				Base,
 			);
 			mainGroup = E6B5158428D09685006FCE79;
+			packageReferences = (
+				E630F1F6290FF78200484927 /* XCRemoteSwiftPackageReference "grpc-swift" */,
+			);
 			productRefGroup = E6B5158E28D09685006FCE79 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -454,6 +468,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E630F1F6290FF78200484927 /* XCRemoteSwiftPackageReference "grpc-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/grpc/grpc-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.9.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E630F1F7290FF78200484927 /* CGRPCZlib */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E630F1F6290FF78200484927 /* XCRemoteSwiftPackageReference "grpc-swift" */;
+			productName = CGRPCZlib;
+		};
+		E630F1F9290FF78200484927 /* GRPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E630F1F6290FF78200484927 /* XCRemoteSwiftPackageReference "grpc-swift" */;
+			productName = GRPC;
+		};
+		E630F1FB290FF78200484927 /* protoc-gen-grpc-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E630F1F6290FF78200484927 /* XCRemoteSwiftPackageReference "grpc-swift" */;
+			productName = "protoc-gen-grpc-swift";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E6B5158528D09685006FCE79 /* Project object */;
 }
