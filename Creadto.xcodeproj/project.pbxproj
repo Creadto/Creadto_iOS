@@ -7,9 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E62BD8F3291039AB004C0AF2 /* pointCloud.grpc.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62BD8F1291039AB004C0AF2 /* pointCloud.grpc.swift */; };
+		E62BD8F4291039AB004C0AF2 /* pointCloud.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62BD8F2291039AB004C0AF2 /* pointCloud.pb.swift */; };
+		E62BD8F729104DB5004C0AF2 /* PointCloudClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62BD8F629104DB5004C0AF2 /* PointCloudClient.swift */; };
+		E62BD8FA2910517B004C0AF2 /* CombineGRPC in Frameworks */ = {isa = PBXBuildFile; productRef = E62BD8F92910517B004C0AF2 /* CombineGRPC */; };
 		E630F1F8290FF78200484927 /* CGRPCZlib in Frameworks */ = {isa = PBXBuildFile; productRef = E630F1F7290FF78200484927 /* CGRPCZlib */; };
 		E630F1FA290FF78200484927 /* GRPC in Frameworks */ = {isa = PBXBuildFile; productRef = E630F1F9290FF78200484927 /* GRPC */; };
 		E630F1FC290FF78200484927 /* protoc-gen-grpc-swift in Frameworks */ = {isa = PBXBuildFile; productRef = E630F1FB290FF78200484927 /* protoc-gen-grpc-swift */; };
+		E633529D291142BB0044612F /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = E633529C291142BB0044612F /* ArgumentParser */; };
 		E652401A28EB41840064D766 /* PLYFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401928EB41840064D766 /* PLYFile.swift */; };
 		E652401C28EC0F670064D766 /* SaveController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401B28EC0F670064D766 /* SaveController.swift */; };
 		E652401E28EC4F650064D766 /* PointCloudVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401D28EC4F650064D766 /* PointCloudVertex.swift */; };
@@ -33,6 +38,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E62BD8F1291039AB004C0AF2 /* pointCloud.grpc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = pointCloud.grpc.swift; path = proto/pointCloud.grpc.swift; sourceTree = SOURCE_ROOT; };
+		E62BD8F2291039AB004C0AF2 /* pointCloud.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = pointCloud.pb.swift; path = proto/pointCloud.pb.swift; sourceTree = SOURCE_ROOT; };
+		E62BD8F629104DB5004C0AF2 /* PointCloudClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointCloudClient.swift; sourceTree = "<group>"; };
 		E652401928EB41840064D766 /* PLYFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLYFile.swift; sourceTree = "<group>"; };
 		E652401B28EC0F670064D766 /* SaveController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveController.swift; sourceTree = "<group>"; };
 		E652401D28EC4F650064D766 /* PointCloudVertex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointCloudVertex.swift; sourceTree = "<group>"; };
@@ -63,8 +71,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E62BD8FA2910517B004C0AF2 /* CombineGRPC in Frameworks */,
 				E630F1FA290FF78200484927 /* GRPC in Frameworks */,
 				E630F1F8290FF78200484927 /* CGRPCZlib in Frameworks */,
+				E633529D291142BB0044612F /* ArgumentParser in Frameworks */,
 				E630F1FC290FF78200484927 /* protoc-gen-grpc-swift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -72,6 +82,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E62BD8F02910399F004C0AF2 /* model */ = {
+			isa = PBXGroup;
+			children = (
+				E62BD8F1291039AB004C0AF2 /* pointCloud.grpc.swift */,
+				E62BD8F2291039AB004C0AF2 /* pointCloud.pb.swift */,
+			);
+			path = model;
+			sourceTree = "<group>";
+		};
+		E62BD8F529104D75004C0AF2 /* grpc */ = {
+			isa = PBXGroup;
+			children = (
+				E62BD8F629104DB5004C0AF2 /* PointCloudClient.swift */,
+			);
+			path = grpc;
+			sourceTree = "<group>";
+		};
 		E6B5158428D09685006FCE79 = {
 			isa = PBXGroup;
 			children = (
@@ -91,6 +118,7 @@
 		E6B5158F28D09685006FCE79 /* Creadto */ = {
 			isa = PBXGroup;
 			children = (
+				E62BD8F02910399F004C0AF2 /* model */,
 				E6B515AD28D0D0F5006FCE79 /* Export */,
 				E6B515AC28D0D0EB006FCE79 /* Camera */,
 				E6B515AB28D0D0DC006FCE79 /* Gallery */,
@@ -116,6 +144,7 @@
 		E6B515AC28D0D0EB006FCE79 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
+				E62BD8F529104D75004C0AF2 /* grpc */,
 				E6B5159528D09685006FCE79 /* Renderer.swift */,
 				E6B5159728D09685006FCE79 /* MainController.swift */,
 				E652401B28EC0F670064D766 /* SaveController.swift */,
@@ -161,6 +190,8 @@
 				E630F1F7290FF78200484927 /* CGRPCZlib */,
 				E630F1F9290FF78200484927 /* GRPC */,
 				E630F1FB290FF78200484927 /* protoc-gen-grpc-swift */,
+				E62BD8F92910517B004C0AF2 /* CombineGRPC */,
+				E633529C291142BB0044612F /* ArgumentParser */,
 			);
 			productName = Creadto;
 			productReference = E6B5158D28D09685006FCE79 /* Creadto.app */;
@@ -192,6 +223,8 @@
 			mainGroup = E6B5158428D09685006FCE79;
 			packageReferences = (
 				E630F1F6290FF78200484927 /* XCRemoteSwiftPackageReference "grpc-swift" */,
+				E62BD8F82910517B004C0AF2 /* XCRemoteSwiftPackageReference "grpc-swift-combine" */,
+				E633529B291142BB0044612F /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 			);
 			productRefGroup = E6B5158E28D09685006FCE79 /* Products */;
 			projectDirPath = "";
@@ -225,10 +258,12 @@
 				E65ADF9328D16AD5007C5886 /* XError.swift in Sources */,
 				E6B515AA28D0C1CF006FCE79 /* CreadtoApp.swift in Sources */,
 				E6E05AB328EDB08E0075732A /* CustomSceneView.swift in Sources */,
+				E62BD8F729104DB5004C0AF2 /* PointCloudClient.swift in Sources */,
 				E6B5159328D09685006FCE79 /* Shaders.metal in Sources */,
 				E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */,
 				E6B515A828D0A3D6006FCE79 /* GalleryView.swift in Sources */,
 				E6B5159628D09685006FCE79 /* Renderer.swift in Sources */,
+				E62BD8F4291039AB004C0AF2 /* pointCloud.pb.swift in Sources */,
 				E65ADF8D28D169DF007C5886 /* MetalBuffer.swift in Sources */,
 				E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */,
 				E652401A28EB41840064D766 /* PLYFile.swift in Sources */,
@@ -237,6 +272,7 @@
 				E6B515AF28D0D178006FCE79 /* MainTabView.swift in Sources */,
 				E6B5159828D09685006FCE79 /* MainController.swift in Sources */,
 				E6B5159128D09685006FCE79 /* AppDelegate.swift in Sources */,
+				E62BD8F3291039AB004C0AF2 /* pointCloud.grpc.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -470,6 +506,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E62BD8F82910517B004C0AF2 /* XCRemoteSwiftPackageReference "grpc-swift-combine" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/vyshane/grpc-swift-combine.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.13;
+			};
+		};
 		E630F1F6290FF78200484927 /* XCRemoteSwiftPackageReference "grpc-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/grpc/grpc-swift.git";
@@ -478,9 +522,22 @@
 				version = 1.9.0;
 			};
 		};
+		E633529B291142BB0044612F /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.1.4;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E62BD8F92910517B004C0AF2 /* CombineGRPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E62BD8F82910517B004C0AF2 /* XCRemoteSwiftPackageReference "grpc-swift-combine" */;
+			productName = CombineGRPC;
+		};
 		E630F1F7290FF78200484927 /* CGRPCZlib */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E630F1F6290FF78200484927 /* XCRemoteSwiftPackageReference "grpc-swift" */;
@@ -495,6 +552,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E630F1F6290FF78200484927 /* XCRemoteSwiftPackageReference "grpc-swift" */;
 			productName = "protoc-gen-grpc-swift";
+		};
+		E633529C291142BB0044612F /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E633529B291142BB0044612F /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

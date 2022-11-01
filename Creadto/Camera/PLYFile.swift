@@ -111,6 +111,15 @@ final class PLYFile {
                 data.append(withUnsafePointer(to: &alpha) {
                     Data(buffer: UnsafeBufferPointer(start: $0, count: 1))
                 })
+//                print("\(particle.position.x) => \(x)")
+//                print("\(particle.position.y) => \(y)")
+//                print("\(particle.position.z) => \(z)")
+//                print("\(arrangeColorByte(color: colors.x)) => \(red)")
+//                print("\(arrangeColorByte(color: colors.y)) => \(green)")
+//                print("\(arrangeColorByte(color: colors.z)) => \(blue)")
+//                print("\(UInt8(255)) => \(alpha)")
+//                print("")
+//                print("--------------------------------------------")
             } else {
                 var x = particle.position.x.bitPattern.bigEndian
                 data.append(withUnsafePointer(to: &x) {

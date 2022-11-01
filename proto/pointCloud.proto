@@ -1,0 +1,22 @@
+syntax = "proto3";
+package creadto;
+option objc_class_prefix = "RTG";
+
+message PointCloudRequest {
+  bytes content = 1;
+}
+
+enum Status {
+  PENDING = 0;
+  IN_PROGRESS = 1;
+  SUCCESS = 2;
+  FAILED = 3;
+}
+
+message PointCloudResponse {
+  Status status = 1;
+}
+
+service PointCloudService {
+  rpc upload(stream PointCloudRequest) returns(PointCloudResponse);
+}
