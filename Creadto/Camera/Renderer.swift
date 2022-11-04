@@ -23,8 +23,7 @@ final class Renderer {
     // Number of sample points on the grid initial: 3M
     //var numGridPoints = 110592 // spacing : 5
     //var numGridPoints = 172800 // spacing : 4
-    //var numGridPoints = 307200 // spacing : 3
-    var numGridPoints = 80000
+    var numGridPoints = 307200 // spacing : 3
     
     // Particle's size in pixels
     private let particleSize: Float = 5
