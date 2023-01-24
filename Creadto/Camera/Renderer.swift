@@ -8,6 +8,7 @@ import ARKit
 import SceneKit
 import CoreImage
 import Vision
+import StandardCyborgFusion
 
 // MARK: - Core Metal Scan Renderer
 final class Renderer {
@@ -106,7 +107,7 @@ final class Renderer {
     private lazy var cameraResolution = Float2(Float(sampleFrame.camera.imageResolution.width), Float(sampleFrame.camera.imageResolution.height))
     private lazy var viewToCamera = sampleFrame.displayTransform(for: orientation, viewportSize: viewportSize).inverted()
     
-    // Before rotation, points are created around the negative z-axis, so rotating them by -135 degrees will place them in the middle of the positive x and z axis
+    // Before rotation, points are created around the negative z-axis, so rotating them by -90 degrees will place them in the middle of the positive x
     private lazy var rotateAroundY = matrix_float4x4(
         [cos(-90 * .degreesToRadian), 0, -sin(-90 *  .degreesToRadian), 0],
         [                  0, 1,                    0, 0],
@@ -125,6 +126,12 @@ final class Renderer {
             rgbUniforms.radius = rgbOn ? 2 : 0
         }
     }
+    
+    private lazy var _maxReconstructionThreadCount: Int32 = {
+        // Unfortunately, there's not a good way to get the number of *high-performance*
+        // CPU cores on iOS, so we have to hard-code this for now
+        return UIDevice.current.userInterfaceIdiom == .pad ? 4 : 2
+    }()
     
     // File & Directory Path
     private let fileManager = FileManager.default

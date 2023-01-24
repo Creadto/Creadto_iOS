@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E600F4B22977D1DA006166AD /* BackCameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E600F4B12977D1DA006166AD /* BackCameraManager.swift */; };
 		E60551DF295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj in Resources */ = {isa = PBXBuildFile; fileRef = E60551DE295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj */; };
 		E60551E1295EC50900679B69 /* Realistic_White_Female_Low_Poly.obj in Resources */ = {isa = PBXBuildFile; fileRef = E60551E0295EC50900679B69 /* Realistic_White_Female_Low_Poly.obj */; };
 		E60551E5295EC58600679B69 /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60551E4295EC58600679B69 /* UserData.swift */; };
@@ -26,6 +27,7 @@
 		E688A2092959D90400055C37 /* SCNFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E688A2082959D90400055C37 /* SCNFile.swift */; };
 		E68A2D3129232795006F3DD4 /* ConvertViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68A2D3029232795006F3DD4 /* ConvertViewModel.swift */; };
 		E68A6500291E6C34000E4A77 /* FileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68A64FF291E6C34000E4A77 /* FileController.swift */; };
+		E6A50B812977D6810065CB86 /* BackScanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A50B802977D6810065CB86 /* BackScanningViewController.swift */; };
 		E6A5FF652961D910001E80D1 /* Measurement.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = E6A5FF642961D910001E80D1 /* Measurement.jpeg */; };
 		E6AE007A291E4B910087DA91 /* ConvertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AE0079291E4B910087DA91 /* ConvertView.swift */; };
 		E6B5159128D09685006FCE79 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5159028D09685006FCE79 /* AppDelegate.swift */; };
@@ -47,6 +49,7 @@
 		0D18D79955828FAD557C3C10 /* Pods-Creadto.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Creadto.debug.xcconfig"; path = "Target Support Files/Pods-Creadto/Pods-Creadto.debug.xcconfig"; sourceTree = "<group>"; };
 		7CFA7FBA5A18266FE5C49462 /* Pods_Creadto.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Creadto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE50B9EC64A6A10CAABB7E92 /* Pods-Creadto.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Creadto.release.xcconfig"; path = "Target Support Files/Pods-Creadto/Pods-Creadto.release.xcconfig"; sourceTree = "<group>"; };
+		E600F4B12977D1DA006166AD /* BackCameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackCameraManager.swift; sourceTree = "<group>"; };
 		E60551DE295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Realistic_White_Male_Low_Poly.obj; sourceTree = "<group>"; };
 		E60551E0295EC50900679B69 /* Realistic_White_Female_Low_Poly.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Realistic_White_Female_Low_Poly.obj; sourceTree = "<group>"; };
 		E60551E4295EC58600679B69 /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
@@ -66,6 +69,7 @@
 		E688A2082959D90400055C37 /* SCNFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNFile.swift; sourceTree = "<group>"; };
 		E68A2D3029232795006F3DD4 /* ConvertViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertViewModel.swift; sourceTree = "<group>"; };
 		E68A64FF291E6C34000E4A77 /* FileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileController.swift; sourceTree = "<group>"; };
+		E6A50B802977D6810065CB86 /* BackScanningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackScanningViewController.swift; sourceTree = "<group>"; };
 		E6A5FF642961D910001E80D1 /* Measurement.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Measurement.jpeg; sourceTree = "<group>"; };
 		E6AD14C12926175000E9F4AF /* StandardCyborgFusion.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = StandardCyborgFusion.xcframework; path = Pods/StandardCyborgFusion/StandardCyborgFusion.xcframework; sourceTree = "<group>"; };
 		E6AD14C22926175000E9F4AF /* StandardCyborgUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StandardCyborgUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,6 +122,15 @@
 				BE50B9EC64A6A10CAABB7E92 /* Pods-Creadto.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		E600F4B02977D185006166AD /* Migration */ = {
+			isa = PBXGroup;
+			children = (
+				E600F4B12977D1DA006166AD /* BackCameraManager.swift */,
+				E6A50B802977D6810065CB86 /* BackScanningViewController.swift */,
+			);
+			path = Migration;
 			sourceTree = "<group>";
 		};
 		E60551DD295EC4C200679B69 /* Resource */ = {
@@ -251,6 +264,7 @@
 				E688A2032959CFD700055C37 /* IO */,
 				E654149829334386001F0107 /* Preview */,
 				E6B9944929251AC800DCEDBE /* TrueDepthCamera */,
+				E600F4B02977D185006166AD /* Migration */,
 				E6B5159528D09685006FCE79 /* Renderer.swift */,
 				E6B5159728D09685006FCE79 /* MainController.swift */,
 				E6B5159C28D09685006FCE79 /* Assets.xcassets */,
@@ -415,7 +429,9 @@
 				E6B515AA28D0C1CF006FCE79 /* CreadtoApp.swift in Sources */,
 				E6B9944B29251AE800DCEDBE /* TrueDepthCameraController.swift in Sources */,
 				E60551EA295EC86400679B69 /* CustomTableViewCell.swift in Sources */,
+				E600F4B22977D1DA006166AD /* BackCameraManager.swift in Sources */,
 				E6E05AB328EDB08E0075732A /* CustomSceneView.swift in Sources */,
+				E6A50B812977D6810065CB86 /* BackScanningViewController.swift in Sources */,
 				E6B5159328D09685006FCE79 /* Shaders.metal in Sources */,
 				E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */,
 				E688A2092959D90400055C37 /* SCNFile.swift in Sources */,
