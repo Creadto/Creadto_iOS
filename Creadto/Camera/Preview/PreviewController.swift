@@ -27,7 +27,6 @@ class PreviewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        setupCamera()
         
         view.backgroundColor = UIColor.white
         view.addSubview(scnView)
@@ -79,13 +78,16 @@ class PreviewController: UIViewController {
         scnView.autoenablesDefaultLighting = true
         scnView.antialiasingMode = .multisampling2X
         scnView.backgroundColor = UIColor(hue: 0.9556, saturation: 0, brightness: 0.97, alpha: 1.0) /* #f7f7f7 */
-    }
-    
-    func setupCamera() {
-        cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0 , y: 5, z:10)
-        scene.rootNode.addChildNode(cameraNode)
+        
+        scnView.pointOfView = scene?.rootNode.childNode(withName: "camera", recursively: true)
+
+        let currentFOV = scnView.pointOfView!.camera!.fieldOfView
+        let pointSize = 10.0 - 0.078 * currentFOV
+        if let pointsElement = scene.rootNode.childNode(withName: "cloud", recursively: true)?.geometry?.elements.first{
+            pointsElement.pointSize = pointSize
+            pointsElement.minimumPointScreenSpaceRadius = pointSize
+            pointsElement.maximumPointScreenSpaceRadius = pointSize
+        }
     }
     
     @objc
